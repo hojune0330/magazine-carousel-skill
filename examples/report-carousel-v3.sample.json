@@ -1,5 +1,5 @@
 {
-  "profile": "report-carousel-v3-render-first",
+  "profile": "report-carousel-v3.1-large-type-adaptive-fill",
   "canvas": {
     "width": 1080,
     "height": 1350,
@@ -10,13 +10,32 @@
     "image_gen_for_layout": false,
     "source_preserving": true,
     "fixed_page_count": 20,
-    "render_all_pages_in_one_run": true
+    "render_all_pages_in_one_run": true,
+    "typography_preset": "source-dense-large",
+    "adaptive_fill": true,
+    "two_pass_rebalance": true
   },
   "brand": {
     "label": "ELITE REPORT",
     "credit": "@io_magazine / 장호준 코치",
     "accent": "#FFD300",
     "background": "#FAF9F6"
+  },
+  "typography": {
+    "main_title": {"size": 56, "line_height": 66},
+    "section_title": {"size": 36, "line_height": 47},
+    "subtitle": {"size": 30, "line_height": 41},
+    "body": {"size": 21, "line_height": 32},
+    "caption": {"size": 17, "line_height": 25},
+    "table": {"size": 14, "line_height": 20},
+    "reference": {"size": 11, "line_height": 16}
+  },
+  "fill_targets": {
+    "normal_vertical_fill": [0.86, 0.97],
+    "panel_utilization": [0.72, 0.92],
+    "table_vertical_fill": [0.72, 0.92],
+    "max_unintentional_blank_band_px": 140,
+    "max_body_footer_gap_px": 180
   },
   "rules": {
     "table_pages_have_no_photos": true,
@@ -25,6 +44,8 @@
     "blurred_same_image_background": true,
     "default_max_uses_per_asset": 1,
     "fixed_typography": true,
+    "font_follows_layer": false,
+    "layer_follows_measured_text": true,
     "ten_image_generation_limit_applies": false
   },
   "source": {
@@ -52,25 +73,32 @@
       "title": "2026 세계 여자 육상 800m 시즌 결산",
       "source_start": 0,
       "source_end": 0,
-      "asset_id": "photo-01"
+      "asset_id": "photo-01",
+      "expected_text_height": 340,
+      "panel_height": 410,
+      "vertical_fill_target": 0.84
+    },
+    {
+      "page": 2,
+      "type": "photo-bottom-panel",
+      "title": "2026년, 여자 육상 800m 역사의 새로운 패러다임",
+      "source_start": 0,
+      "source_end": 900,
+      "asset_id": "photo-02",
+      "expected_text_height": 520,
+      "panel_height": 600,
+      "panel_utilization_target": 0.84
     },
     {
       "page": 6,
-      "type": "table",
+      "type": "table-balanced",
       "title": "2026 시즌 세계 여자 육상 800m Top 15",
       "source_start": 0,
       "source_end": 0,
       "asset_id": null,
-      "photo_forbidden": true
-    },
-    {
-      "page": 7,
-      "type": "table",
-      "title": "2026 시즌 세계 여자 육상 800m Top 15",
-      "source_start": 0,
-      "source_end": 0,
-      "asset_id": null,
-      "photo_forbidden": true
+      "photo_forbidden": true,
+      "row_height_range": [64, 118],
+      "table_vertical_fill_target": 0.84
     },
     {
       "page": 10,
@@ -79,43 +107,30 @@
       "source_start": 0,
       "source_end": 1000,
       "asset_id": "photo-10",
-      "next_page_source_start": 1000
+      "next_page_source_start": 1000,
+      "expected_text_height": 610,
+      "panel_height": 690
     },
     {
       "page": 11,
-      "type": "table",
+      "type": "table-balanced",
       "title": "4.1. 대회 출전 이력 및 성과",
       "source_start": 1000,
       "source_end": 1800,
       "asset_id": null,
       "photo_forbidden": true,
-      "previous_page_source_end": 1000
+      "previous_page_source_end": 1000,
+      "table_vertical_fill_target": 0.86
     },
     {
       "page": 12,
-      "type": "photo-bottom-panel",
+      "type": "source-highlight",
       "title": "도쿄의 아쉬움과 실내 시즌의 대폭발",
+      "highlight": "1:54.87",
       "source_start": 1800,
       "source_end": 2800,
-      "asset_id": "photo-12"
-    },
-    {
-      "page": 14,
-      "type": "table",
-      "title": "오드리 베로: 대회 출전 이력 및 성과",
-      "source_start": 0,
-      "source_end": 0,
-      "asset_id": null,
-      "photo_forbidden": true
-    },
-    {
-      "page": 17,
-      "type": "table",
-      "title": "펨커 브루더스-볼: 대회 출전 이력 및 성과",
-      "source_start": 0,
-      "source_end": 0,
-      "asset_id": null,
-      "photo_forbidden": true
+      "asset_id": "photo-12",
+      "highlight_in_body": false
     },
     {
       "page": 20,
@@ -126,6 +141,16 @@
       "asset_id": "photo-20"
     }
   ],
+  "qa": {
+    "missing_chars": 0,
+    "duplicated_chars": 0,
+    "order_mismatch": 0,
+    "offset_gaps": 0,
+    "offset_overlaps": 0,
+    "unintentional_blank_bands": 0,
+    "body_font_below_20": 0,
+    "table_pages_with_photos": 0
+  },
   "deliverables": [
     "01.png",
     "20.png",
