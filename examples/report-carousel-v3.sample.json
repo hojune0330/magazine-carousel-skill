@@ -1,5 +1,5 @@
 {
-  "profile": "report-carousel-v3.1-large-type-adaptive-fill",
+  "profile": "report-carousel-v3.2-large-type-adaptive-assets",
   "canvas": {
     "width": 1080,
     "height": 1350,
@@ -13,7 +13,10 @@
     "render_all_pages_in_one_run": true,
     "typography_preset": "source-dense-large",
     "adaptive_fill": true,
-    "two_pass_rebalance": true
+    "two_pass_rebalance": true,
+    "asset_audit": true,
+    "visual_fallback": true,
+    "generated_auxiliary_allowed": true
   },
   "brand": {
     "label": "ELITE REPORT",
@@ -28,12 +31,15 @@
     "body": {"size": 21, "line_height": 32},
     "caption": {"size": 17, "line_height": 25},
     "table": {"size": 14, "line_height": 20},
+    "chart_label": {"size": 14, "line_height": 20},
+    "chart_value": {"size": 17, "line_height": 23},
     "reference": {"size": 11, "line_height": 16}
   },
   "fill_targets": {
     "normal_vertical_fill": [0.86, 0.97],
     "panel_utilization": [0.72, 0.92],
     "table_vertical_fill": [0.72, 0.92],
+    "chart_vertical_fill": [0.70, 0.92],
     "max_unintentional_blank_band_px": 140,
     "max_body_footer_gap_px": 180
   },
@@ -46,7 +52,11 @@
     "fixed_typography": true,
     "font_follows_layer": false,
     "layer_follows_measured_text": true,
-    "ten_image_generation_limit_applies": false
+    "ten_image_generation_limit_applies": false,
+    "actual_data_only_for_charts": true,
+    "screenshots_require_provenance": true,
+    "generated_auxiliary_is_last_resort": true,
+    "generated_auxiliary_discomfort": "very-low"
   },
   "source": {
     "path": "source.txt",
@@ -56,14 +66,45 @@
   "assets": [
     {
       "id": "photo-01",
-      "path": "assets/photo-01.jpg",
+      "path": "assets/photos/photo-01.jpg",
       "origin": "user-upload",
+      "media_type": "photo",
       "sha256": "<asset-sha256>",
       "perceptual_hash": "<phash>",
       "source_url": null,
-      "author": null,
-      "license": null,
       "used_on": [1]
+    },
+    {
+      "id": "capture-01",
+      "path": "assets/screenshots/capture-01.png",
+      "origin": "official-screenshot",
+      "media_type": "screenshot",
+      "source_url": "https://example.org/official-results",
+      "source_title": "Official results",
+      "capture_date": "2026-08-28",
+      "used_on": [8]
+    },
+    {
+      "id": "chart-01",
+      "path": "assets/generated/chart-01.svg",
+      "origin": "generated-chart",
+      "media_type": "chart",
+      "generated_from_data": "assets/data/records.csv",
+      "units": "seconds",
+      "used_on": [9]
+    },
+    {
+      "id": "icon-01",
+      "path": "assets/generated/icon-01.png",
+      "origin": "generated-icon",
+      "media_type": "illustration",
+      "generation_profile": {
+        "style": "clean-flat-2d",
+        "mood": "healthy-calm-friendly",
+        "uncanny_level": "very-low",
+        "discomfort_level": "very-low"
+      },
+      "used_on": [13]
     }
   ],
   "pages": [
@@ -74,71 +115,53 @@
       "source_start": 0,
       "source_end": 0,
       "asset_id": "photo-01",
+      "visual_requirement": "photo-required",
+      "fallback_tier": 1,
       "expected_text_height": 340,
-      "panel_height": 410,
-      "vertical_fill_target": 0.84
-    },
-    {
-      "page": 2,
-      "type": "photo-bottom-panel",
-      "title": "2026년, 여자 육상 800m 역사의 새로운 패러다임",
-      "source_start": 0,
-      "source_end": 900,
-      "asset_id": "photo-02",
-      "expected_text_height": 520,
-      "panel_height": 600,
-      "panel_utilization_target": 0.84
+      "panel_height": 410
     },
     {
       "page": 6,
       "type": "table-balanced",
       "title": "2026 시즌 세계 여자 육상 800m Top 15",
-      "source_start": 0,
-      "source_end": 0,
       "asset_id": null,
+      "visual_requirement": "photo-forbidden",
       "photo_forbidden": true,
-      "row_height_range": [64, 118],
-      "table_vertical_fill_target": 0.84
+      "row_height_range": [64, 118]
     },
     {
-      "page": 10,
-      "type": "photo-bottom-panel",
-      "title": "킬리 호킨슨",
-      "source_start": 0,
-      "source_end": 1000,
-      "asset_id": "photo-10",
-      "next_page_source_start": 1000,
-      "expected_text_height": 610,
-      "panel_height": 690
+      "page": 8,
+      "type": "evidence-capture",
+      "title": "공식 결과에서 확인되는 변화",
+      "asset_id": "capture-01",
+      "visual_requirement": "capture-evidence",
+      "fallback_tier": 3
     },
     {
-      "page": 11,
-      "type": "table-balanced",
-      "title": "4.1. 대회 출전 이력 및 성과",
-      "source_start": 1000,
-      "source_end": 1800,
-      "asset_id": null,
-      "photo_forbidden": true,
-      "previous_page_source_end": 1000,
-      "table_vertical_fill_target": 0.86
+      "page": 9,
+      "type": "chart-report",
+      "title": "기록은 얼마나 빨라졌나",
+      "asset_id": "chart-01",
+      "visual_requirement": "data-visual",
+      "fallback_tier": 4,
+      "chart_vertical_fill_target": 0.82
     },
     {
-      "page": 12,
-      "type": "source-highlight",
-      "title": "도쿄의 아쉬움과 실내 시즌의 대폭발",
-      "highlight": "1:54.87",
-      "source_start": 1800,
-      "source_end": 2800,
-      "asset_id": "photo-12",
-      "highlight_in_body": false
+      "page": 13,
+      "type": "icon-grid",
+      "title": "스피드 지구력의 구성 요소",
+      "asset_id": "icon-01",
+      "visual_requirement": "diagram-preferred",
+      "fallback_tier": 6,
+      "fallback_reason": "No relevant real photo or factual capture"
     },
     {
       "page": 20,
       "type": "sources",
       "title": "결론 및 향후 전망",
-      "source_start": 0,
-      "source_end": 0,
-      "asset_id": "photo-20"
+      "asset_id": null,
+      "visual_requirement": "typography-sufficient",
+      "fallback_tier": 7
     }
   ],
   "qa": {
@@ -149,7 +172,11 @@
     "offset_overlaps": 0,
     "unintentional_blank_bands": 0,
     "body_font_below_20": 0,
-    "table_pages_with_photos": 0
+    "table_pages_with_photos": 0,
+    "duplicate_assets": 0,
+    "screenshots_without_provenance": 0,
+    "charts_without_source": 0,
+    "generated_auxiliary_discomfort_failures": 0
   },
   "deliverables": [
     "01.png",
@@ -161,6 +188,8 @@
     "text-manifest.txt",
     "page-map.json",
     "asset-map.json",
+    "ASSET_AUDIT.md",
+    "VISUAL_FALLBACK_LOG.md",
     "IMAGE_SOURCES.md",
     "QA_REPORT.md"
   ]
