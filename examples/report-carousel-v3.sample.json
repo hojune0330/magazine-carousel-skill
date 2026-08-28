@@ -1,0 +1,142 @@
+{
+  "profile": "report-carousel-v3-render-first",
+  "canvas": {
+    "width": 1080,
+    "height": 1350,
+    "aspect_ratio": "4:5"
+  },
+  "mode": {
+    "render_engine": "deterministic",
+    "image_gen_for_layout": false,
+    "source_preserving": true,
+    "fixed_page_count": 20,
+    "render_all_pages_in_one_run": true
+  },
+  "brand": {
+    "label": "ELITE REPORT",
+    "credit": "@io_magazine / 장호준 코치",
+    "accent": "#FFD300",
+    "background": "#FAF9F6"
+  },
+  "rules": {
+    "table_pages_have_no_photos": true,
+    "foreground_photo_fit": "contain",
+    "foreground_crop": false,
+    "blurred_same_image_background": true,
+    "default_max_uses_per_asset": 1,
+    "fixed_typography": true,
+    "ten_image_generation_limit_applies": false
+  },
+  "source": {
+    "path": "source.txt",
+    "sha256": "<source-sha256>",
+    "character_count": 0
+  },
+  "assets": [
+    {
+      "id": "photo-01",
+      "path": "assets/photo-01.jpg",
+      "origin": "user-upload",
+      "sha256": "<asset-sha256>",
+      "perceptual_hash": "<phash>",
+      "source_url": null,
+      "author": null,
+      "license": null,
+      "used_on": [1]
+    }
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "type": "cover-photo",
+      "title": "2026 세계 여자 육상 800m 시즌 결산",
+      "source_start": 0,
+      "source_end": 0,
+      "asset_id": "photo-01"
+    },
+    {
+      "page": 6,
+      "type": "table",
+      "title": "2026 시즌 세계 여자 육상 800m Top 15",
+      "source_start": 0,
+      "source_end": 0,
+      "asset_id": null,
+      "photo_forbidden": true
+    },
+    {
+      "page": 7,
+      "type": "table",
+      "title": "2026 시즌 세계 여자 육상 800m Top 15",
+      "source_start": 0,
+      "source_end": 0,
+      "asset_id": null,
+      "photo_forbidden": true
+    },
+    {
+      "page": 10,
+      "type": "photo-bottom-panel",
+      "title": "킬리 호킨슨",
+      "source_start": 0,
+      "source_end": 1000,
+      "asset_id": "photo-10",
+      "next_page_source_start": 1000
+    },
+    {
+      "page": 11,
+      "type": "table",
+      "title": "4.1. 대회 출전 이력 및 성과",
+      "source_start": 1000,
+      "source_end": 1800,
+      "asset_id": null,
+      "photo_forbidden": true,
+      "previous_page_source_end": 1000
+    },
+    {
+      "page": 12,
+      "type": "photo-bottom-panel",
+      "title": "도쿄의 아쉬움과 실내 시즌의 대폭발",
+      "source_start": 1800,
+      "source_end": 2800,
+      "asset_id": "photo-12"
+    },
+    {
+      "page": 14,
+      "type": "table",
+      "title": "오드리 베로: 대회 출전 이력 및 성과",
+      "source_start": 0,
+      "source_end": 0,
+      "asset_id": null,
+      "photo_forbidden": true
+    },
+    {
+      "page": 17,
+      "type": "table",
+      "title": "펨커 브루더스-볼: 대회 출전 이력 및 성과",
+      "source_start": 0,
+      "source_end": 0,
+      "asset_id": null,
+      "photo_forbidden": true
+    },
+    {
+      "page": 20,
+      "type": "sources",
+      "title": "결론 및 향후 전망",
+      "source_start": 0,
+      "source_end": 0,
+      "asset_id": "photo-20"
+    }
+  ],
+  "deliverables": [
+    "01.png",
+    "20.png",
+    "<slug>.zip",
+    "<slug>_preview.jpg",
+    "<slug>_preview.png",
+    "source.txt",
+    "text-manifest.txt",
+    "page-map.json",
+    "asset-map.json",
+    "IMAGE_SOURCES.md",
+    "QA_REPORT.md"
+  ]
+}
