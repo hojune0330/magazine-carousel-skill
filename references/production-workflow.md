@@ -4,6 +4,13 @@
 
 현재 기본 조판 방식은 **큰 본문 + 텍스트 실측형 레이어 + 2-pass 페이지 재균형**이다.
 
+이미지 입력·자산 부족·캡처·그래프·도식·보조 생성 이미지가 포함되면 다음 문서를 추가로 읽는다.
+
+- `asset-intake-and-visual-fallback.md`
+- `asset-production-extension.md`
+
+해당 문서와 이 문서가 충돌하면 v3.2 asset 문서가 우선한다.
+
 ## 1. 작업 폴더
 
 ```text
@@ -28,6 +35,8 @@ output/<slug>/
   text-manifest.txt
   page-map.json
   asset-map.json
+  ASSET_AUDIT.md
+  VISUAL_FALLBACK_LOG.md
   IMAGE_SOURCES.md
   QA_REPORT.md
 output/<slug>.zip
@@ -134,6 +143,19 @@ reference: 11/16
 - 다운로드 실패 시 사용 목록에서 제거한다.
 - URL, 작가, 라이선스, 다운로드 날짜를 IMAGE_SOURCES.md에 기록한다.
 
+### v3.2 자산 감사·보완
+
+페이지 맵 작성 전 다음을 수행한다.
+
+1. 업로드 형식·해상도·비율·색공간·방향을 정규화한다.
+2. 완전 중복·근접 중복을 검사한다.
+3. 페이지를 photo-required/preferred/optional/forbidden으로 분류한다.
+4. 자산 부족 페이지를 탐지한다.
+5. 실제 이미지→실제 캡처→실제 데이터 그래프·표→도식→저불쾌감 보조 에셋→타이포그래피 순으로 보완한다.
+6. 결과를 ASSET_AUDIT.md와 VISUAL_FALLBACK_LOG.md에 기록한다.
+
+상세 절차는 `asset-production-extension.md`를 따른다.
+
 ## 6. 페이지 타입 배정
 
 - 표가 있으면 `table-balanced`
@@ -144,6 +166,11 @@ reference: 11/16
 - 두 사진 비교면 `photo-duo`
 - 여러 사진의 시간·선수 전개면 `photo-stack`
 - 원문 문장·수치 강조면 `source-highlight`
+- 실제 데이터 그래프면 `chart-report`
+- 실제 웹/PDF/영상/앱 캡처면 `evidence-capture`
+- 타임라인·흐름도·훈련 구조면 `diagram-explainer`
+- 2~4개 개념 아이콘이면 `icon-grid`
+- 친근한 2D 보조 설명이면 `character-explainer`
 - 결론과 출처는 `sources`
 
 표 페이지는 사진 타입과 결합하지 않는다.
@@ -157,7 +184,7 @@ reference: 11/16
 1. 제목 줄바꿈과 높이
 2. 본문 줄바꿈과 높이
 3. 도입·참고·각주 높이
-4. 표 셀 줄바꿈과 행 높이
+4. 표 셀·그래프 레이블 줄바꿈과 높이
 5. 푸터 안전 영역
 
 패널 계산:
@@ -196,7 +223,7 @@ table_vertical_fill: 0.72~0.92
 underfill 해결:
 
 1. 패널 축소
-2. 사진 확대
+2. 사진·그래프·도식 확대
 3. 다음 페이지의 완전한 문장·문단을 앞당김
 4. photo-duo/photo-stack 전환
 5. source-highlight 사용
@@ -205,10 +232,10 @@ underfill 해결:
 
 overfill 해결:
 
-1. 사진 면적 축소
+1. 시각물 면적 축소
 2. 마지막 완전한 문장·문단을 다음 장으로 이동
 3. 1열→2열 전환
-4. 표 분할
+4. 표·그래프 분할
 5. body-balanced 전환
 
 규칙:
@@ -244,6 +271,7 @@ overfill 해결:
 - 폰트 파일은 사용자에게 배포하지 않는다.
 - 정해진 fallback 순서 사용
 - 페이지 번호는 2자리 파일명
+- 보조 생성 자산이 있더라도 최종 페이지 조판은 코드로 수행
 
 ## 11. 사진 렌더링
 
@@ -265,25 +293,34 @@ overfill 해결:
 - 웜화이트 또는 충분한 불투명도의 어두운 패널
 - 패널 높이는 텍스트 실측값으로 계산
 
-## 12. 표 렌더링
+## 12. 표·그래프·캡처 렌더링
+
+표:
 
 - 사진 없음
 - 웜화이트 단색 배경
 - 검정 외곽선과 회색 내부선
 - 헤더 굵기 고정
-- 셀별 줄바꿈 허용
 - 행 높이 64~118px
-- 남는 높이에 맞춰 행 높이와 표 위치를 재배분
-- 표 폰트는 전 표 페이지 동일
+- 표 폰트 전 장 동일
+
+그래프:
+
+- 실제 값만 사용
+- 축·단위·기간·기준·출처 표시
+- 레이블은 코드로 조판
+- 3D 그래프 금지
+
+캡처:
+
+- 실제 페이지·PDF·영상·앱에서 직접 획득
+- URL·날짜·페이지·시간코드 기록
+- 개인정보 마스킹
+- 데이터 변조 금지
 
 ## 13. 텍스트 검수
 
 원문 보존 모드에서:
-
-1. page-map 순서로 텍스트 연결
-2. 조판용 줄바꿈·푸터 제거
-3. source.txt와 비교
-4. QA_REPORT.md에 기록
 
 ```text
 source_chars: N
@@ -298,7 +335,7 @@ offset_overlaps: 0
 ## 14. 시각 검수
 
 - 개별 PNG 100%
-- 25% 모바일 축소
+- 모바일 25%
 - 전체 콘택트시트
 
 확인:
@@ -308,13 +345,14 @@ offset_overlaps: 0
 - 표 페이지 사진 없음
 - 사진 중복 없음
 - 핵심 피사체 보존
-- 텍스트 오버플로 없음
-- 빈 공간 기준 충족
-- 패널 활용률 기준 충족
+- 캡처 출처·개인정보
+- 그래프 수치·축·단위·출처
+- 생성 보조 자산의 낮은 불쾌감
+- 빈 공간·패널 활용률
 
 ## 15. 패키징
 
-- 01.png~마지막.png를 숫자 순서로 ZIP에 넣는다.
+- PNG를 숫자 순서로 ZIP에 넣는다.
 - 검수 파일 포함
 - 콘택트시트 JPG/PNG 생성
 - ZIP과 미리보기 실제 열림 확인
@@ -327,11 +365,12 @@ offset_overlaps: 0
 - 총 페이지 수
 - deterministic file rendering 사용
 - typography preset
-- 이미지 origin
+- 이미지·캡처·그래프·도식 origin
 - 표 페이지 번호
+- 자산 부족 페이지와 fallback tier
 - 이미지 중복 검사
 - 원문 누락 검사
 - 빈 공간·패널 활용률 검사
-- ZIP, preview, manifest, sources, QA 링크
+- ZIP, preview, manifest, asset audit, visual fallback log, sources, QA 링크
 
 `완료`라고 쓴 뒤 파일이 없거나 생성형 이미지 결과만 나열하는 것은 실패다.
