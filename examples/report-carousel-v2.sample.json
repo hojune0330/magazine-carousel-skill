@@ -1,0 +1,45 @@
+{
+  "profile": "report-carousel-v2",
+  "canvas": {"width": 1080, "height": 1350},
+  "label": "ELITE REPORT",
+  "credit": "@io_magazine / 장호준 코치",
+  "pages": [
+    {
+      "type": "cover",
+      "page": 1,
+      "title": "2026 세계 여자 육상 800m 시즌 결산 및 핵심 선수 심층 분석"
+    },
+    {
+      "type": "body",
+      "page": 2,
+      "title": "1. 서론: 2026년, 여자 육상 800m 역사의 새로운 패러다임",
+      "body": "본문은 17px / 26px 규격을 유지합니다. 공간이 부족하면 다음 장으로 이어갑니다."
+    },
+    {
+      "type": "table",
+      "page": 3,
+      "title": "2026 시즌 세계 여자 육상 800m Top 15",
+      "intro": "표는 얇은 선과 정렬 중심으로 구성합니다.",
+      "columns": ["랭킹", "기록", "선수명", "국적"],
+      "rows": [["1", "1:53.70", "오드리 베로", "SUI"]]
+    },
+    {
+      "type": "photo-hero",
+      "page": 4,
+      "title": "오드리 베로: 1분 53초대의 지배자",
+      "photo": "assets/example-athlete-photo.jpg",
+      "body": "사진이 들어가도 제목과 푸터 좌표는 바뀌지 않습니다."
+    },
+    {
+      "type": "photo-data",
+      "page": 5,
+      "title": "선수 기록 분석",
+      "photo": "assets/example-athlete-photo.jpg",
+      "data": {
+        "국적": "SUI",
+        "PB": "1:53.70",
+        "시즌": "2026"
+      }
+    }
+  ]
+}
