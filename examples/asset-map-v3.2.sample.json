@@ -1,0 +1,119 @@
+{
+  "profile": "report-carousel-v3.2-large-type-adaptive-assets",
+  "asset_policy": {
+    "default_max_uses_per_asset": 1,
+    "foreground_fit": "contain",
+    "foreground_crop": false,
+    "table_pages_have_no_photos": true,
+    "generated_auxiliary_allowed": true,
+    "generated_auxiliary_is_last_resort": true,
+    "visual_comfort_profile": "healthy-calm-friendly"
+  },
+  "assets": [
+    {
+      "id": "photo-01",
+      "local_path": "assets/photos/photo-01.jpg",
+      "origin": "user-upload",
+      "media_type": "photo",
+      "width": 2400,
+      "height": 3000,
+      "orientation": "portrait",
+      "color_space": "sRGB",
+      "sha256": "<sha256>",
+      "perceptual_hash": "<phash>",
+      "subject_tags": ["athlete", "race"],
+      "quality": "high",
+      "rights_status": "user-upload",
+      "source_url": null,
+      "used_on": [2]
+    },
+    {
+      "id": "capture-01",
+      "local_path": "assets/screenshots/capture-01.png",
+      "origin": "official-screenshot",
+      "media_type": "screenshot",
+      "width": 1800,
+      "height": 1200,
+      "sha256": "<sha256>",
+      "source_url": "https://example.org/results",
+      "source_title": "Official results",
+      "capture_date": "2026-08-28",
+      "page_number": null,
+      "video_timestamp": null,
+      "transformations": ["crop-relevant-region"],
+      "used_on": [8]
+    },
+    {
+      "id": "chart-01",
+      "local_path": "assets/generated/chart-01.svg",
+      "origin": "generated-chart",
+      "media_type": "chart",
+      "generated_from_data": "assets/data/records.csv",
+      "chart_type": "slope-chart",
+      "axes": ["date", "record_seconds"],
+      "units": "seconds",
+      "source_url": "https://example.org/official-data",
+      "used_on": [9]
+    },
+    {
+      "id": "diagram-01",
+      "local_path": "assets/generated/diagram-01.svg",
+      "origin": "generated-diagram",
+      "media_type": "diagram",
+      "generated_from_source_offsets": [1200, 1680],
+      "diagram_type": "timeline",
+      "used_on": [10]
+    },
+    {
+      "id": "icon-01",
+      "local_path": "assets/generated/icon-01.png",
+      "origin": "generated-icon",
+      "media_type": "illustration",
+      "generation_profile": {
+        "style": "clean-flat-2d",
+        "mood": "healthy-calm-friendly",
+        "uncanny_level": "very-low",
+        "discomfort_level": "very-low",
+        "violence": "none",
+        "gore": "none",
+        "medical_invasiveness": "none",
+        "sexualization": "none"
+      },
+      "factual_evidence": false,
+      "used_on": [13]
+    }
+  ],
+  "page_visual_requirements": [
+    {
+      "page": 2,
+      "requirement": "photo-required",
+      "selected_asset": "photo-01",
+      "fallback_tier": 1
+    },
+    {
+      "page": 8,
+      "requirement": "capture-evidence",
+      "selected_asset": "capture-01",
+      "fallback_tier": 3
+    },
+    {
+      "page": 9,
+      "requirement": "data-visual",
+      "selected_asset": "chart-01",
+      "fallback_tier": 4
+    },
+    {
+      "page": 13,
+      "requirement": "diagram-preferred",
+      "selected_asset": "icon-01",
+      "fallback_tier": 6,
+      "fallback_reason": "No relevant real photo, capture, or numerical data"
+    }
+  ],
+  "deliverables": [
+    "ASSET_AUDIT.md",
+    "VISUAL_FALLBACK_LOG.md",
+    "IMAGE_SOURCES.md",
+    "QA_REPORT.md"
+  ]
+}
