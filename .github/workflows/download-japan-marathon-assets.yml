@@ -13,13 +13,13 @@ permissions:
 jobs:
   build-bundle:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Download Wikimedia Commons originals and build bundle
+      - name: Download Wikimedia Commons images and build bundle
         shell: bash
         run: |
           set -euo pipefail
@@ -29,101 +29,35 @@ jobs:
           import re
           import shutil
           import time
+          import unicodedata
+          import urllib.error
           import urllib.parse
           import urllib.request
           from pathlib import Path
 
-          USER_AGENT = 'io-magazine-carousel-skill/3.2 (GitHub Actions image bundler)'
+          USER_AGENT = 'io-magazine-carousel-skill/3.2 (GitHub Actions image bundler; contact: hojune0330@users.noreply.github.com)'
           API = 'https://commons.wikimedia.org/w/api.php'
           OUT = Path('bundle')
           OUT.mkdir(parents=True, exist_ok=True)
 
           assets = [
-              {
-                  'filename': '01_mgc_elite_group.jpg',
-                  'title': 'Marathon Grand Championship 190915.jpg',
-                  'use': '1장 표지 — 일본 엘리트 선수층',
-              },
-              {
-                  'filename': '02_tokyo_marathon_three_runners.jpg',
-                  'title': 'Tokyo Marathon 2019 Runner (32321717927).jpg',
-                  'use': '2장 — 일본의 두꺼운 기록대',
-              },
-              {
-                  'filename': '05_tokyo_marathon_depth.jpg',
-                  'title': 'Tokyo Marathon 2019 Runner (46348723405).jpg',
-                  'use': '5장 — 일본의 기록 밀집',
-              },
-              {
-                  'filename': '06_kengo_suzuki_portrait.jpg',
-                  'title': 'Kengo Suzuki 190915.jpg',
-                  'use': '6장 — 비와코 마라톤과 스즈키 켄고',
-              },
-              {
-                  'filename': '07_asahi_kuroda_hakone.jpg',
-                  'title': '2026 Hakone Ekiden Asahi Kuroda 20260102.jpg',
-                  'use': '7장 — 하코네에서 마라톤으로 이어지는 파이프라인',
-              },
-              {
-                  'filename': '09_mgc_group_kayabacho.jpg',
-                  'title': 'Marathon Grand Championship マラソングランドチャンピオンシップ (@ kayabacho 茅場町) (48735319826).jpg',
-                  'use': '9장 — 초고성능 중산층과 MGC 선수 집단',
-              },
-              {
-                  'filename': '11a_suguru_osako.jpg',
-                  'title': 'Suguru Osako 190915.jpg',
-                  'use': '11장 — Project EXCEED / 오사코 스구루',
-              },
-              {
-                  'filename': '11b_yuta_shitara.jpg',
-                  'title': 'Yuta Shitara 190915.jpg',
-                  'use': '11장 — Project EXCEED / 시타라 유타',
-              },
-              {
-                  'filename': '12_corporate_runners_mgc.jpg',
-                  'title': 'Marathon Grand Championship マラソングランドチャンピオンシップ (@ takebashi 竹橋 気象庁前交差点) (48735479697).jpg',
-                  'use': '12장 — 실업단 선수 집단',
-              },
-              {
-                  'filename': '13_mgc_race_action.jpg',
-                  'title': 'Marathon Grand Championship 190915a3.jpg',
-                  'use': '13장 — MGC 레이스',
-              },
-              {
-                  'filename': '14_hakone_ekiden_landscape.jpg',
-                  'title': 'Hakone Ekiden 2026 (98111).jpg',
-                  'use': '14장 — 하코네 에키덴',
-              },
-              {
-                  'filename': '15a_vaporfly_carbon_plate.png',
-                  'title': 'Nike Vaporfly Cut in Half.png',
-                  'use': '15장 — 카본 플레이트 구조',
-              },
-              {
-                  'filename': '15b_adios_pro_3.jpg',
-                  'title': 'Adizero Adios Pro 3.jpg',
-                  'use': '15장 — 현대 슈퍼슈즈',
-              },
-              {
-                  'filename': '17_kengo_suzuki_berlin.jpg',
-                  'title': 'Kengo Suzuki at Berlin-Marathon 2025-09-21 04.jpg',
-                  'use': '17장 — 세계 무대의 일본 엘리트',
-              },
-              {
-                  'filename': '18_hakone_tasuki_runner.jpg',
-                  'title': 'Hakone Ekiden 2023 (53080595752).jpg',
-                  'use': '18장 — 에키덴과 타스키',
-              },
-              {
-                  'filename': '18b_hakone_vertical.jpg',
-                  'title': 'Hakone Ekiden 2026 (20571).jpg',
-                  'use': '18장 세로형 대안',
-              },
-              {
-                  'filename': '19_akira_akasaki_berlin.jpg',
-                  'title': 'Akira Akasaki at Berlin-Marathon 2025-09-21 01.jpg',
-                  'use': '19장 — 일본 엘리트 마라토너',
-              },
+              {'filename': '01_mgc_elite_group.jpg', 'title': 'Marathon Grand Championship 190915.jpg', 'use': '1장 표지 — 일본 엘리트 선수층'},
+              {'filename': '02_tokyo_marathon_three_runners.jpg', 'title': 'Tokyo Marathon 2019 Runner (32321717927).jpg', 'use': '2장 — 일본의 두꺼운 기록대'},
+              {'filename': '05_tokyo_marathon_depth.jpg', 'title': 'Tokyo Marathon 2019 Runner (46348723405).jpg', 'use': '5장 — 일본의 기록 밀집'},
+              {'filename': '06_kengo_suzuki_portrait.jpg', 'title': 'Kengo Suzuki 190915.jpg', 'use': '6장 — 비와코 마라톤과 스즈키 켄고'},
+              {'filename': '07_asahi_kuroda_hakone.jpg', 'title': '2026 Hakone Ekiden Asahi Kuroda 20260102.jpg', 'use': '7장 — 하코네에서 마라톤으로 이어지는 파이프라인'},
+              {'filename': '09_mgc_group_kayabacho.jpg', 'title': 'Marathon Grand Championship マラソングランドチャンピオンシップ (@ kayabacho 茅場町) (48735319826).jpg', 'use': '9장 — 초고성능 중산층과 MGC 선수 집단'},
+              {'filename': '11a_suguru_osako.jpg', 'title': 'Suguru Osako 190915.jpg', 'use': '11장 — Project EXCEED / 오사코 스구루'},
+              {'filename': '11b_yuta_shitara.jpg', 'title': 'Yuta Shitara 190915.jpg', 'use': '11장 — Project EXCEED / 시타라 유타'},
+              {'filename': '12_corporate_runners_mgc.jpg', 'title': 'Marathon Grand Championship マラソングランドチャンピオンシップ (@ takebashi 竹橋 気象庁前交差点) (48735479697).jpg', 'use': '12장 — 실업단 선수 집단'},
+              {'filename': '13_mgc_race_action.jpg', 'title': 'Marathon Grand Championship 190915a3.jpg', 'use': '13장 — MGC 레이스'},
+              {'filename': '14_hakone_ekiden_landscape.jpg', 'title': 'Hakone Ekiden 2026 (98111).jpg', 'use': '14장 — 하코네 에키덴'},
+              {'filename': '15a_vaporfly_carbon_plate.png', 'title': 'Nike Vaporfly Cut in Half.png', 'use': '15장 — 카본 플레이트 구조'},
+              {'filename': '15b_adios_pro_3.jpg', 'title': 'Adizero Adios Pro 3.jpg', 'use': '15장 — 현대 슈퍼슈즈'},
+              {'filename': '17_kengo_suzuki_berlin.jpg', 'title': 'Kengo Suzuki at Berlin-Marathon 2025-09-21 04.jpg', 'use': '17장 — 세계 무대의 일본 엘리트'},
+              {'filename': '18_hakone_tasuki_runner.jpg', 'title': 'Hakone Ekiden 2023 (53080595752).jpg', 'use': '18장 — 에키덴과 타스키'},
+              {'filename': '18b_hakone_vertical.jpg', 'title': 'Hakone Ekiden 2026 (20571).jpg', 'use': '18장 세로형 대안'},
+              {'filename': '19_akira_akasaki_berlin.jpg', 'title': 'Akira Akasaki at Berlin-Marathon 2025-09-21 01.jpg', 'use': '19장 — 일본 엘리트 마라토너'},
           ]
 
           def clean_html(value):
@@ -134,40 +68,84 @@ jobs:
               value = re.sub(r'<[^>]+>', '', value)
               return re.sub(r'\s+', ' ', value).strip()
 
-          def api_image_info(title):
-              params = {
-                  'action': 'query',
-                  'format': 'json',
-                  'formatversion': '2',
-                  'prop': 'imageinfo',
-                  'iiprop': 'url|size|mime|extmetadata',
-                  'titles': f'File:{title}',
-              }
-              url = API + '?' + urllib.parse.urlencode(params)
-              req = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
-              with urllib.request.urlopen(req, timeout=45) as resp:
-                  data = json.load(resp)
-              pages = data.get('query', {}).get('pages', [])
-              if not pages or pages[0].get('missing'):
-                  raise RuntimeError(f'Commons file not found: {title}')
-              info = pages[0].get('imageinfo', [])
-              if not info:
-                  raise RuntimeError(f'No imageinfo returned: {title}')
-              return info[0]
+          def norm_title(value):
+              value = value.removeprefix('File:').replace('_', ' ').strip()
+              return unicodedata.normalize('NFC', value).casefold()
+
+          def request_with_retry(url, *, timeout, attempts=8, destination=None):
+              last_error = None
+              for attempt in range(1, attempts + 1):
+                  try:
+                      req = urllib.request.Request(
+                          url,
+                          headers={
+                              'User-Agent': USER_AGENT,
+                              'Accept': 'application/json,image/*,*/*;q=0.8',
+                          },
+                      )
+                      with urllib.request.urlopen(req, timeout=timeout) as resp:
+                          if destination is None:
+                              return resp.read()
+                          with destination.open('wb') as f:
+                              shutil.copyfileobj(resp, f, length=1024 * 1024)
+                              return None
+                  except urllib.error.HTTPError as exc:
+                      last_error = exc
+                      if exc.code not in (429, 500, 502, 503, 504) or attempt == attempts:
+                          raise
+                      retry_after = exc.headers.get('Retry-After')
+                      delay = float(retry_after) if retry_after and retry_after.isdigit() else min(90, 4 * (2 ** (attempt - 1)))
+                      print(f'HTTP {exc.code}; retry {attempt}/{attempts} after {delay:.0f}s: {url}')
+                      time.sleep(delay)
+                  except (urllib.error.URLError, TimeoutError) as exc:
+                      last_error = exc
+                      if attempt == attempts:
+                          raise
+                      delay = min(60, 3 * (2 ** (attempt - 1)))
+                      print(f'Network retry {attempt}/{attempts} after {delay:.0f}s: {exc}')
+                      time.sleep(delay)
+              raise RuntimeError(str(last_error))
+
+          # One API request for every title, avoiding repeated API-rate hits.
+          params = {
+              'action': 'query',
+              'format': 'json',
+              'formatversion': '2',
+              'redirects': '1',
+              'prop': 'imageinfo',
+              'iiprop': 'url|size|mime|extmetadata',
+              'iiurlwidth': '3000',
+              'titles': '|'.join(f'File:{item["title"]}' for item in assets),
+          }
+          api_url = API + '?' + urllib.parse.urlencode(params)
+          api_payload = request_with_retry(api_url, timeout=90, attempts=8)
+          data = json.loads(api_payload.decode('utf-8'))
+          pages = data.get('query', {}).get('pages', [])
+          info_by_title = {}
+          for page in pages:
+              title = page.get('title', '')
+              if page.get('missing') or not page.get('imageinfo'):
+                  continue
+              info_by_title[norm_title(title)] = image_info = page['imageinfo'][0]
 
           manifest = []
           failures = []
 
           for idx, asset in enumerate(assets, start=1):
               title = asset['title']
+              target = OUT / asset['filename']
               try:
-                  info = api_image_info(title)
-                  original_url = info['url']
-                  target = OUT / asset['filename']
-                  req = urllib.request.Request(original_url, headers={'User-Agent': USER_AGENT})
-                  with urllib.request.urlopen(req, timeout=120) as resp, target.open('wb') as f:
-                      shutil.copyfileobj(resp, f)
+                  info = info_by_title.get(norm_title(title))
+                  if not info:
+                      raise RuntimeError(f'Commons file not found or imageinfo missing: {title}')
 
+                  # 3000px derivatives are already larger than the 1080×1350 carousel canvas.
+                  # Use the original when it is not larger than 3000px; otherwise use the high-resolution derivative.
+                  max_dimension = max(info.get('width') or 0, info.get('height') or 0)
+                  download_url = info.get('url') if max_dimension <= 3000 else info.get('thumburl', info.get('url'))
+                  rendition = 'original' if download_url == info.get('url') else '3000px-production-copy'
+
+                  request_with_retry(download_url, timeout=240, attempts=8, destination=target)
                   if target.stat().st_size < 1024:
                       raise RuntimeError(f'Downloaded file is unexpectedly small: {target.stat().st_size} bytes')
 
@@ -181,10 +159,12 @@ jobs:
                       'title': title,
                       'planned_use': asset['use'],
                       'commons_page': page_url,
-                      'original_url': original_url,
-                      'width': info.get('width'),
-                      'height': info.get('height'),
-                      'size_bytes': target.stat().st_size,
+                      'original_url': info.get('url'),
+                      'downloaded_url': download_url,
+                      'rendition': rendition,
+                      'original_width': info.get('width'),
+                      'original_height': info.get('height'),
+                      'downloaded_size_bytes': target.stat().st_size,
                       'mime': info.get('mime'),
                       'author': meta('Artist'),
                       'credit': meta('Credit'),
@@ -192,11 +172,12 @@ jobs:
                       'license_url': meta('LicenseUrl'),
                       'description': meta('ImageDescription'),
                   })
-                  print(f'[{idx:02d}/{len(assets)}] downloaded {asset["filename"]}')
-                  time.sleep(0.2)
+                  print(f'[{idx:02d}/{len(assets)}] downloaded {asset["filename"]} ({rendition})')
+                  time.sleep(3.0)
               except Exception as exc:
                   failures.append({'title': title, 'filename': asset['filename'], 'error': str(exc)})
                   print(f'FAILED: {title}: {exc}')
+                  time.sleep(5.0)
 
           (OUT / 'manifest.json').write_text(
               json.dumps({'assets': manifest, 'failures': failures}, ensure_ascii=False, indent=2),
@@ -206,8 +187,9 @@ jobs:
           lines = [
               '# 일본 마라톤 캐러셀 이미지 출처',
               '',
-              'Wikimedia Commons의 원본 파일을 자동 다운로드해 묶은 자료입니다.',
-              '각 이미지 사용 시 아래의 작가·라이선스·원문 페이지 정보를 유지하세요.',
+              'Wikimedia Commons에서 자동 다운로드한 게시용 고해상도 이미지 묶음입니다.',
+              '원본이 3000px보다 큰 경우 1080×1350 캐러셀 제작에 충분한 3000px 고해상도 사본을 포함했습니다.',
+              '각 이미지 사용 시 아래 작가·라이선스·파일 페이지 정보를 유지하세요.',
               '',
           ]
           for item in manifest:
@@ -220,7 +202,8 @@ jobs:
                   f'- 라이선스 URL: {item["license_url"] or "페이지 확인"}',
                   f'- 파일 페이지: {item["commons_page"]}',
                   f'- 원본 파일: {item["original_url"]}',
-                  f'- 크기: {item["width"]} × {item["height"]}',
+                  f'- ZIP 포함본: {item["rendition"]}',
+                  f'- 원본 크기: {item["original_width"]} × {item["original_height"]}',
                   '',
               ])
           if failures:
