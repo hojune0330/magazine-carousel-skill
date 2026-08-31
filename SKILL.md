@@ -1,468 +1,135 @@
 ---
 name: io-magazine-report-carousel
-description: Produce Korean Instagram 4:5 report carousels as deterministic files with large readable body text, text-first adaptive composition, multi-format asset intake, and an evidence-first visual fallback ladder. When the user says 스킬대로, 파일로, 렌더링해서, 20장 전체, PNG/ZIP, or asks to continue a deck, render the full requested page count in one production run. Do not use image generation for Korean text or page layout, do not apply a 10-image limit, preserve source order and exact text when requested, keep tables photo-free, normalize uploaded assets, audit duplicates and quality, and when images are insufficient choose real originals, factual captures, data-backed charts/tables, diagrams, or very-low-discomfort auxiliary icons/characters in that order. Deliver PNGs, ZIP, previews, manifests, maps, asset audit, visual fallback log, image credits, and QA.
-version: 3.2
+description: Render Korean Instagram report carousels as complete text-first PNG file sets. Preserve the selected source in full when requested; photos, charts and diagrams supplement rather than replace text. Use the approved large-type layout, measure text before assigning image space, keep tables photo-free, and separate public slide content from production reports and internal logs. Never print FULL TEXT, source-file notices, QA or manifest status on audience-facing slides. Research and attribute real image assets, validate every visible text node, and deliver the requested page count in one rendering job.
+version: 3.3
 status: active
 ---
 
-# IO MAGAZINE REPORT CAROUSEL SKILL v3.2
-
-인스타그램 4:5 세로형 카드뉴스를 **파일 렌더링 방식**으로 제작한다. 이 스킬은 생성형 포스터가 아니라 여러 장의 원문·사진·표·그래프·캡처·도식을 정확한 순서로 조판하여 PNG 묶음으로 내보내는 제작 시스템이다.
-
-현재 공식 프로필은 **`report-carousel-v3.2-large-type-adaptive-assets`**다.
-
-- 제작 방식: Python/Pillow, SVG, HTML/CSS canvas 등 결정론적 렌더링
-- 타이포그래피: 큰 모바일 가독성 우선 본문
-- 레이아웃: 텍스트를 먼저 실측하고 사진·패널·표·그래프를 텍스트에 맞춤
-- 이미지 입력: JPG·PNG·WebP·HEIC·SVG·PDF·ZIP·CSV/XLSX 등 다중 형식 지원
-- 자산 부족 대응: 실제 이미지 → 실제 캡처 → 실제 데이터 그래프·표 → 도식 → 저불쾌감 보조 생성 이미지 → 타이포그래피
-- 표 구성: 사진 없는 웜화이트 리포트형
-- 금지 방식: 생성형 이미지 도구가 한국어 장문·표·페이지 번호·전체 레이아웃을 직접 그리는 방식
-
----
-
-## 0. 요청을 찰떡같이 해석하는 최우선 규칙
-
-다음 표현이 하나라도 있으면 **파일 렌더링 모드**로 즉시 고정한다.
-
-- `스킬대로 만들어`
-- `파일로 만들어`
-- `렌더링해서 만들어`
-- `20장 전체 만들어`
-- `PNG와 ZIP으로`
-- `캐러셀 전체 제작`
-- `앞 장에 이어서 만들어`
-- `이미지 생성 기능 쓰지 말고`
-
-이 모드에서는:
-
-1. 최종 페이지 레이아웃과 한국어 텍스트에 image_gen을 사용하지 않는다.
-2. 10장 생성 제한을 언급하거나 적용하지 않는다.
-3. 요청 장수를 한 번에 제작한다.
-4. 한국어 텍스트, 표, 그래프 레이블, 페이지 번호, 크레딧은 코드로 조판한다.
-5. 파일이 실제로 생성되고 경로가 확인되기 전에는 완료했다고 말하지 않는다.
-
-사용자가 `이미지 만들어`라고만 말해도 다장 캐러셀·원문·표·ZIP 맥락이면 파일 렌더링이 우선이다. 사용자가 명시적으로 `생성형 이미지로`, `그림을 새로 그려`, `한 장 포스터를 생성`이라고 할 때만 전체 이미지 생성 모드를 고려한다.
-
-보조 아이콘·캐릭터·개념 일러스트는 **별도 에셋**으로만 생성할 수 있다. 사용자가 `이미지 생성 기능 쓰지 말고`라고 하면 보조 생성 에셋도 전부 금지한다.
-
-상세 분기 규칙은 `references/request-routing.md`를 따른다.
-
----
+# IO MAGAZINE — Text-first Report Carousel v3.3
 
-## 1. 절대 규칙
-
-1. 다장 카드뉴스의 기본은 결정론적 파일 렌더링이다.
-2. 같은 역할의 텍스트는 전 장에서 폰트·크기·굵기·줄간격을 고정한다.
-3. 일반 본문은 20px 미만으로 내려가지 않는다.
-4. 폰트를 레이어에 맞추지 않는다. 사진·패널·표·그래프 레이어를 텍스트 실측값에 맞춘다.
-5. 오버플로는 페이지 경계 재조정, 사진 영역 축소, 1열/2열 변경, 표 분할로 해결한다. 특정 장만 글자를 줄이지 않는다.
-6. 사용자가 원문 전체 유지 또는 누락 금지를 지시하면 원문 보존 모드를 강제한다.
-7. 원문 보존 모드에서는 문자·숫자·괄호·각주·URL·표 셀·문장 순서를 수정, 요약, 교정하지 않는다.
-8. 표 페이지에는 사진을 넣지 않는다.
-9. 실제 사진 전경은 원본 비율을 유지하고 크롭하지 않는다. 배경 채움만 blur/cover 크롭을 허용한다.
-10. 사용자가 전달한 사진은 실제 업로드 파일을 사용한다. 비슷한 이미지를 생성형 도구로 재현하지 않는다.
-11. 사진 중복을 피한다. 동일 파일, 다른 파일명의 같은 사진, 근접 중복을 검사한다.
-12. 온라인 사진은 실제 원본을 다운로드한 뒤에만 사용한다. 다운로드하지 못했으면 사용했다고 주장하지 않는다.
-13. 이미지가 부족하면 의미 없는 장식을 넣지 않고 `asset-intake-and-visual-fallback.md`의 근거 중심 대체 순서를 따른다.
-14. 실제 수치가 없는 가짜 그래프를 만들지 않는다.
-15. 실제 화면·문서·영상 캡처는 출처, 페이지, 시간코드, 캡처 날짜를 기록한다.
-16. 보조 생성 이미지는 매우 낮은 불쾌감의 건강하고 친근한 2D 아이콘·캐릭터·개념 일러스트로 제한한다.
-17. 생성형 보조 이미지를 실제 사건·선수·경기 사진의 증거처럼 제시하지 않는다.
-18. 모든 자산의 origin, 파일 해시, 출처, 사용 페이지를 `asset-map.json`에 기록한다.
-19. 최종 완료 전 개별 PNG, 콘택트시트, 텍스트 매니페스트, 페이지 순서, 이미지 중복, 빈 공간, 자산 출처, 대체 시각물 근거를 검수한다.
+현재 활성 프로필: `report-carousel-v3.3-text-first-audience-clean`.
 
----
+## 0. 이번 승인 기준
 
-## 2. 반드시 읽을 문서
+사용자가 승인한 `japan_marathon_fulltext_20_v2`의 텍스트 중심 제작 수준을 기준으로 한다. 본문을 요약해 그래프로 바꾸던 이전 축약본과 생성형 포스터는 기준이 아니다.
 
-- `references/request-routing.md` — 사용자 표현 해석
-- `references/production-workflow.md` — 입력부터 ZIP 전달까지 전체 공정
-- `references/report-carousel-v3.md` — 캔버스, 타이포그래피, 페이지 타입
-- `references/adaptive-density.md` — 큰 본문, 동적 패널, 빈 공간 재균형
-- `references/asset-intake-and-visual-fallback.md` — 업로드 형식, 자산 감사, 이미지 부족 대응
-- `references/copy-guard.md` — 원문 무삭제와 연속성 검수
-- `references/qa-checklist.md` — 완료 판정 기준
+이번 변경의 대상은 **결과 안내문이 아니라 실제 게시용 슬라이드 안에 그려지는 문구**다. 위쪽의 `풀 텍스트 / FULL TEXT`, 아래쪽의 `원문은 파일에 수록되어 있습니다` 등 제작자가 추가한 메타 문구를 제거한다. 원문·검수·첨부파일 설명은 제작 보고서, 첨부 문서, 전달 메시지에 남겨도 된다.
 
-충돌 시 우선순위:
+## 1. 실행 방식
 
-1. 사용자의 현재 명시적 지시
-2. `SKILL.md` 절대 규칙
-3. `asset-intake-and-visual-fallback.md`
-4. `adaptive-density.md`
-5. `request-routing.md`
-6. `production-workflow.md`
-7. `report-carousel-v3.md`
-8. 나머지 문서
-
----
-
-## 3. 작업 모드
-
-### A. 원문 보존 모드
-
-- 원문을 `source.txt`로 잠근다.
-- 페이지별 텍스트는 원문 앞에서 뒤로 연속해서 나눈다.
-- 어떤 장도 이전 장 내용을 다시 시작하지 않는다.
-- 10장 이후 11장은 10장 마지막 문자 다음부터 시작한다.
-- 표의 열·행·셀 값을 그대로 사용한다.
-- 원문 분할로 생긴 줄바꿈만 허용한다.
-- `text-manifest.txt`와 source를 비교한다.
-- 누락, 중복, 순서 역전, offset gap/overlap이 하나라도 있으면 실패다.
+- `스킬대로`, `렌더링`, `파일로`, `20장 전체`, `원문 빠짐없이`, `앞 장에 이어서`는 전체 파일 렌더링 요청이다.
+- Python/Pillow, HTML/CSS, SVG 등으로 요청한 장수를 하나의 프로젝트에서 제작한다. 생성 이미지 개수 제한을 파일 렌더링에 적용하지 않는다.
+- 최종 레이아웃, 한국어 본문, 표, 그래프 레이블, 페이지 번호는 생성형 이미지에 맡기지 않는다.
+- 사용자가 이미지 생성 기능을 금지하면 별도 보조 생성 에셋도 사용하지 않는다. 코드로 그리는 표·그래프와 생성형 AI 이미지는 다른 종류다.
+- 이번 스킬 업데이트만으로 과거 PNG가 수정되었다고 말하지 않는다. 실제 재렌더링이 필요하다.
 
-### B. 편집 모드
+## 2. 우선순위와 절대 규칙
 
-- 한 장에 하나의 명확한 메시지를 둔다.
-- 제목은 결론형, 판단형, 질문형을 우선한다.
-- 본문은 짧고 구체적으로 쓴다.
-- 숫자, 기록, 비교, 행동 기준을 앞쪽에 둔다.
-- 편집 문구와 출처 원문을 별도로 관리한다.
+1. 선택된 원문의 모든 내용과 순서를 보존한다. 요약본·예전 매니페스트로 슬쩍 교체하지 않는다.
+2. 잘림·겹침·가림 없이 읽히게 한다.
+3. 같은 역할의 글자는 전 장에서 폰트·크기·굵기·행간을 고정한다.
+4. 사진·새 그래프·새 도식은 **보조**다. 원문의 문장이나 원래 표를 대체할 수 없다.
+5. 텍스트를 먼저 실측한다. 남은 공간에 관련 이미지를 배치하며, 공간이 없으면 이미지를 뺀다.
+6. 전경 사진은 원본 비율을 유지하고 크롭하지 않는다. 텍스트 패널로 얼굴·동작을 가리는 것도 실패다.
+7. 표 페이지에는 사진을 넣지 않는다. 원문 표와 참고문은 모두 남긴다.
+8. 사용 이미지의 실제 파일, 중복 여부, 출처와 권리 상태를 확인한다. 한 사진은 기본 1회 사용이다.
+9. 게시용 슬라이드에는 독자가 읽을 콘텐츠와 필요한 출처·권리 표기만 넣는다. 제작 상태·파일 안내·QA를 넣지 않는다.
+10. 자료 조사, 이미지 확보, 파일 제작, 검사에 성공한 범위만 완료라고 보고한다.
 
-### C. 고정 장수 모드
+## 3. 반드시 읽을 문서
 
-- 장수를 계약 조건으로 취급한다.
-- 먼저 고정 폰트로 텍스트 용량을 계산한다.
-- 사진 면적, 문단 열, 표 분할, 페이지 경계를 조정한다.
-- 장수를 맞추기 위해 원문을 삭제하거나 글자를 축소하지 않는다.
-- 물리적으로 수용할 수 없을 때만 렌더링 전에 충돌을 알린다.
+- `references/audience-content-boundary.md` — 슬라이드 노출층과 제작 메타정보 분리
+- `references/copy-guard.md` — 원문 무삭제·원문 선택·순서 검사
+- `references/report-carousel-v3.md` — 승인된 텍스트 중심 규격
+- `references/adaptive-density.md` — 본문 우선 공간 배분
+- `references/image-research-and-placement.md` — 이미지 조사·선별·배정·권리
+- `references/asset-intake-and-visual-fallback.md` — 입력 형식·대체 시각물
+- `references/request-routing.md` — 짧은 지시 해석
+- `references/production-workflow.md` — 실제 제작 공정
+- `references/qa-checklist.md` — 완료 기준
 
-### D. 큰 본문·빈 공간 개선 모드
+현재 사용자 지시가 최우선이며 환경의 상위 지침과 안전 규칙을 따른다. 위 문서가 충돌하면 원문 보존과 노출층 분리 원칙을 먼저 적용한다. 충돌을 이유로 원문을 자동 삭제하지 않는다. v2~v3.2의 사진 우선·작은 본문·축약 예시는 과거 참고일 뿐 현재 기본값이 아니다.
 
-다음 표현에서 자동 적용한다.
+## 4. 원문 작업 모드
 
-- `본문이 작아`
-- `글자를 더 크게`
-- `빈 공간이 눈에 띄어`
-- `레이어를 텍스트에 맞춰`
-- `사진을 더 크게 채워`
+### `preserve-exact` — 전체 유지 요청의 기본
 
-적용:
+`source.txt`의 원본 바이트·해시를 보존하고 모든 제목·문단·표 셀·각주·URL을 페이지에 실제 배치한다. 파일에 원문을 넣어 두는 것으로 슬라이드 누락을 보완하지 않는다. 줄바꿈과 페이지 분할만 허용하며 원문 순서는 유지한다.
 
-- `reading-large` 또는 `source-dense-large`를 데크 전체에 설정
-- 텍스트 bounding box 선측정
-- 패널 높이 = 텍스트 높이 + 패딩
-- 남은 영역을 사진·그래프·도식에 배분
-- 인접 페이지 underfill/overfill 재균형
+### `reorder-without-rewrite` — 명시적으로 구조 변경을 허용했을 때만
 
-### E. 자산 부족 자동 보완 모드
+원문 블록을 이동할 수 있으나 문장을 다시 쓰지 않는다. 이동 전후 블록 ID와 원문 범위를 기록하고 각 블록이 정확히 한 번 쓰였는지 검사한다. 일반 원문 보존 요청만으로 재배열을 허용하지 않는다.
 
-다음 표현에서 자동 적용한다.
+### `edit-approved` — 요약·축약을 명시적으로 허용했을 때만
 
-- `이미지가 부족하면 알아서 채워`
-- `사진 없으면 그래프나 표로`
-- `실제 화면을 캡처해서 써`
-- `아이콘이나 캐릭터로 표현해`
-- `중복 없이 구성해`
+승인된 편집본을 별도 원문으로 잠근다. 사용자가 이후 전문 사용을 재지시하면 이 모드를 중지한다. 초기 보고서와 편집본이 혼재하면 최신 지시에서 가리킨 자료를 도구로 확인한다.
 
-실행:
+## 5. 타이포그래피와 이미지
 
-1. 업로드 파일 형식·해상도·비율·중복·권리를 감사한다.
-2. 사진 필수/선호/선택/금지 페이지를 구분한다.
-3. 부족 페이지에 가장 적합한 시각물 Tier를 선택한다.
-4. 실제 사진·실제 캡처·실제 데이터 시각화를 생성형 자산보다 우선한다.
-5. 사용자가 생성 기능을 금지하지 않았을 때만 마지막 수단으로 저불쾌감 보조 생성 에셋을 사용한다.
-6. 선택 근거를 `VISUAL_FALLBACK_LOG.md`에 기록한다.
+- 기준 캔버스: 1080×1350, 4:5.
+- 승인본 스타일 파일이 있으면 실제 폰트·좌표를 계승한다. 새 기본 본문은 **26px / 행간 39px**, 제목 56px, 부제목 36px이다.
+- 페이지별 축소 금지. 먼저 보조 이미지·그래프를 축소 또는 제외하고 문단 분배·열 구성을 조정한다.
+- 20장 고정과 원문·고정 폰트가 실제로 충돌할 때만 제약을 알린다. 몰래 요약하거나 21px 프리셋으로 후퇴하지 않는다.
+- 여백은 재조판의 판단 자료이지 원문 삭제·무의미한 사진 추가의 근거가 아니다.
+- 이미지 조사는 페이지별 설명 목적에서 시작한다. 자료를 모은 뒤 억지로 페이지를 만드는 방식을 피한다.
 
----
+## 6. 공개·제작·내부 3층
 
-## 4. 큰 본문 타이포그래피
+- `public`: 제목, 부제, 본문, 원문 표, 보조 시각물의 라벨, 필요한 출처·사진 크레딧, 승인 브랜드와 페이지 번호.
+- `production`: 원문 포함 여부, 전달 파일 목록, 작업 방식, 수정 내역, QA 요약. 보고서와 전달 메시지에는 허용한다.
+- `internal`: 원문 오프셋, 해시, 중복 검사, 후보 탈락 사유, 폰트 측정, 오류 로그.
 
-1080×1350 기준:
+렌더러는 `audience=public`인 허용 역할만 그린다. `production`과 `internal` 문자열은 픽셀에 그리지 않는다. 필드가 없으면 임의로 public으로 간주하지 않는다.
 
-### `reading-large`
+### 슬라이드 금지 예시
 
-```yaml
-main_title: 56/66
-section_title: 36/47
-subtitle: 30/41
-body: 23/35
-caption: 18/27
-table: 15/22
-reference: 11/16
-```
+`풀 텍스트`, `FULL TEXT`, `원문은 파일에 수록`, `첨부파일에서 원문 확인`, `원문 보존본`, `검수본`, `text-manifest`, `QA_REPORT`, `렌더링 완료` 등 제작자가 붙인 문구.
 
-### `source-dense-large`
+단어 차단기가 아니다. 실제 콘텐츠에 있는 `본 보고서는`, 조사 기간, 표본 기준, 연구 방법, 논문 제목, 사진 라이선스는 유지한다. 예외는 출처·역할·사유를 기록해 승인하고 자동 삭제하지 않는다.
 
-```yaml
-main_title: 56/66
-section_title: 36/47
-subtitle: 30/41
-body: 21/32
-caption: 17/25
-table: 14/20
-reference: 11/16
-```
+## 7. 필수 제작 순서
 
-- 한 데크는 하나의 프리셋을 사용한다.
-- 장마다 프리셋을 바꾸지 않는다.
-- 17px 본문을 기본값으로 쓰지 않는다.
+1. 선택 원문과 승인 스타일 잠금.
+2. public/production/internal 분리.
+3. 전체 본문·원문 표부터 분할·실측.
+4. 이미지 필요도 정의 → 조사 → 다운로드/실제 캡처 → 권리·중복·품질 확인 → 배정.
+5. 보조 이미지가 본문을 밀면 보조 이미지를 제거하고 전체 순서 재검사.
+6. 렌더링 전 `scripts/lint_public_surface.py`로 게시 문구 검사.
+7. 요청 전체 PNG 렌더링. 모든 텍스트 draw call을 `render-surface.json`에 기록.
+8. 실제 draw log에 동일 검사 재실행. 원문 대조와 텍스트 경계·가림 검사를 별도로 수행.
+9. 모든 장을 개별·모바일·콘택트시트로 검토한 뒤 ZIP 생성.
 
----
+검사기는 원문·데이터를 변경하지 않는다. 메타 문구가 원문 자체에 있으면 원문 보존과 공개 범위를 확인한 뒤 처리한다.
 
-## 5. 이미지 업로드 형식
-
-권장:
-
-- 사진: JPG/JPEG, PNG, WebP
-- 투명 로고·도식: SVG, PNG
-- 문서·공식 표: PDF
-- 그래프 원본: CSV, XLSX, JSON
-- 일괄 업로드: ZIP
-- 조건부 변환: HEIC/HEIF, TIFF, BMP, GIF
-- 프레임 캡처: MP4, MOV, WebM
-
-권장 해상도:
-
-- 대형 사진 짧은 변 1600px 이상, 이상적 2400px 이상
-- 절반 폭 사진 짧은 변 1000px 이상
-- 스크린샷 가로 1440px 이상 또는 2× 캡처
-- 로고 SVG 또는 1200px 이상 투명 PNG
-
-모든 입력은 sRGB, 실제 방향, 알파 채널, 파일 해시 기준으로 정규화한다.
-
-상세 규칙은 `references/asset-intake-and-visual-fallback.md`를 따른다.
-
----
-
-## 6. 시각 자산 부족 대응 순서
-
-페이지 성격에 따라 가장 근거가 강한 수단을 선택한다.
-
-### Tier 1 — 사용자 제공 실제 이미지
-
-실제 업로드 파일을 무크롭 전경으로 사용한다.
-
-### Tier 2 — 실제 원본 이미지 추가 다운로드
-
-공식 기관, 사용자 지정 링크, 라이선스가 명확한 원본을 실제로 다운로드한다.
-
-### Tier 3 — 실제 캡처
-
-공식 웹 결과, PDF 차트, 공식 영상 프레임, 앱 화면을 직접 캡처한다. URL·페이지·시간코드·캡처 날짜를 기록한다.
-
-### Tier 4 — 실제 데이터 기반 그래프·표
-
-원문·CSV·공식 결과의 실제 값으로 막대, 선, slope, 기록 타임라인, 순위 ladder 등을 코드 생성한다. 축·단위·기간·출처를 표시한다.
-
-### Tier 5 — 원문 기반 도식·타임라인·프로세스
-
-훈련 구조, 레이스 흐름, 원인→적응→결과, 트랙·코스 구조를 코드로 조판한다.
-
-### Tier 6 — 저불쾌감 보조 생성 에셋
-
-실제 자료와 데이터 시각화로 해결되지 않을 때만 사용한다.
-
-허용:
-
-- 선형 아이콘
-- 스포츠 실루엣
-- 친근한 2D 캐릭터
-- 건강·회복·훈련 개념 일러스트
-- 추상 배경 패턴
-
-조건:
-
-- clean flat 2D
-- healthy, calm, friendly
-- uncanny/discomfort very low
-- 폭력, 피, 주사, 수술, 체액, 공포, 신체 왜곡, 성적 대상화 없음
-- 실제 선수의 가짜 사진·가짜 경기 장면 금지
-- 생성 이미지 내부에 한국어 장문·표·페이지 번호 금지
-
-사용자가 이미지 생성을 금지하면 Tier 6을 사용하지 않는다.
-
-### Tier 7 — 타이포그래피
-
-적절한 시각 근거가 없으면 대형 기록, source-highlight, 번호형 구조로 해결한다. 사진을 억지로 넣지 않는다.
-
----
-
-## 7. 페이지 타입
-
-- `cover-photo`: 전면 사진 + 제목 패널
-- `photo-bottom-panel`: 사진 + 텍스트 실측형 하단 패널
-- `photo-top-report`: 상단 사진 + 하단 보고서
-- `photo-split`: 세로 사진 + 본문
-- `photo-duo`: 두 사진 비교
-- `photo-stack`: 2~3장 사진 전개
-- `source-highlight`: 원문 구절·수치 대형 강조
-- `body-balanced`: 사진 없는 큰 본문
-- `table-balanced`: 사진 없는 표
-- `chart-report`: 실제 데이터 그래프 + 해석
-- `evidence-capture`: 실제 웹/PDF/영상 캡처 + 출처
-- `diagram-explainer`: 타임라인·흐름도·트랙·프로세스
-- `icon-grid`: 2~4개 의미형 아이콘
-- `character-explainer`: 친근한 2D 캐릭터·스포츠 실루엣
-- `sources`: 결론과 출처
-
-페이지마다 자유롭게 임의 조판하지 않는다. 승인된 타입 중 하나를 선택한다.
-
----
-
-## 8. 자산 origin과 기록
-
-지원 origin:
-
-```text
-user-upload
-downloaded-original
-official-screenshot
-pdf-capture
-video-frame
-app-capture
-generated-chart
-generated-table
-generated-diagram
-generated-timeline
-generated-map
-generated-icon
-generated-character
-generated-illustration
-generated-pattern
-```
-
-각 자산에는 다음을 기록한다.
-
-- local path
-- SHA-256
-- perceptual hash
-- origin
-- source URL/title
-- author/license
-- capture date/page/timestamp
-- transformations
-- used_on
-
----
-
-## 9. 전체 제작 파이프라인
-
-### 9.1 입력 잠금
-
-```text
-source.txt
-style.json
-page-map.json
-asset-map.json
-assets/
-```
-
-### 9.2 자산 감사
-
-- 형식 지원 여부
-- 크기와 비율
-- 색공간과 방향
-- 중복
-- 권리 상태
-- 페이지 적합성
-
-결과를 `ASSET_AUDIT.md`에 기록한다.
-
-### 9.3 페이지 맵과 자산 보완
-
-각 페이지에 source offset, page type, asset ID, typography preset, expected text height, fallback tier를 기록한다.
-
-이미지가 부족하면 `VISUAL_FALLBACK_LOG.md`에 페이지별 선택과 근거를 기록한다.
-
-### 9.4 2-pass 페이지 균형
-
-- Pass 1: 고정 폰트 기준 용량 분할
-- Pass 2: 인접 페이지 underfill/overfill 재균형
-
-### 9.5 렌더링
-
-- 1080×1350, 4:5
-- Python/Pillow, SVG, HTML/CSS canvas 등
-- 요청 전체 장수를 한 실행에서 렌더링
-- 생성형 보조 에셋이 있어도 최종 페이지 조판은 결정론적 렌더링
-- 오버플로, 큰 빈 공간, 자산 근거 부족 시 중단 후 page map 수정
-
-### 9.6 검수와 패키징
-
-검수:
-
-- 원문 누락·중복·순서
-- 본문 크기와 패널 활용률
-- 표 페이지 사진 0개
-- 사진 중복과 피사체 보존
-- 캡처 출처와 개인정보
-- 그래프 수치·축·단위·출처
-- 생성 보조 에셋의 낮은 불쾌감과 사실 오인 가능성
-
-산출물:
+## 8. 기본 산출물
 
 ```text
 <slug>/
   01.png ... 20.png
-  source.txt
-  text-manifest.txt
-  page-map.json
-  asset-map.json
-  ASSET_AUDIT.md
-  VISUAL_FALLBACK_LOG.md
-  IMAGE_SOURCES.md
-  QA_REPORT.md
+  preview.jpg
+  preview.png
+  production/
+    source.txt
+    text-manifest.txt
+    page-map.json
+    asset-map.json
+    style.json
+    render-surface.json
+    PUBLIC_SURFACE_QA.json
+    ASSET_AUDIT.md
+    VISUAL_FALLBACK_LOG.md
+    IMAGE_SOURCES.md
+    CONTENT_REVIEW_NOTES.md
+    QA_REPORT.md
 <slug>.zip
-<slug>_preview.jpg
-<slug>_preview.png
 ```
 
----
+제작 문서에는 필요한 설명을 충분히 남긴다. 슬라이드와 미리보기에는 그 설명을 인쇄하지 않는다. 출처·라이선스의 독자 노출 의무까지 없애지 않는다.
 
-## 10. 온라인 이미지·캡처 정직성
+## 9. 실패 기준
 
-- 검색 링크만 확인하고 파일을 받지 않았다면 사용했다고 말하지 않는다.
-- 대화 업로드는 `user-upload`로 기록한다.
-- 실제 원본 다운로드만 `downloaded-original`로 기록한다.
-- 실제 캡처만 screenshot/capture origin으로 기록한다.
-- URL, 제목, 작가, 라이선스, 페이지, 시간코드, 다운로드·캡처 날짜를 남긴다.
+원문 누락/대체, 표 셀 손실, 장별 본문 축소, 잘림·가림, 표 뒤 사진, 무관한 사진 반복, 허위 다운로드 주장, 생성형 페이지 조판, 슬라이드 속 제작 메타정보 중 하나라도 있으면 완료 처리하지 않는다.
 
----
+## 10. 저장소 운영
 
-## 11. 실패 조건
-
-다음 중 하나라도 있으면 완료 처리하지 않는다.
-
-- 다장 파일 제작 요청에 image_gen으로 전체 페이지를 생성했다.
-- 파일 렌더링 요청에 10장 제한을 적용했다.
-- 생성형 이미지에 한국어 장문·표·페이지 번호를 맡겼다.
-- 원문 누락, 중복, 순서 역전이 있다.
-- 일반 본문이 20px 미만이다.
-- 같은 역할의 폰트가 장마다 다르다.
-- 의도하지 않은 큰 빈 공간이 남았다.
-- 표 페이지에 사진이 들어갔다.
-- 전경 사진 핵심 피사체가 잘렸다.
-- 같은 사진이 승인 없이 반복됐다.
-- 저해상도 사진을 무리하게 전면 확대했다.
-- 출처 없는 웹 캡처를 사용했다.
-- 실제 데이터 없는 가짜 그래프를 만들었다.
-- 생성형 보조 이미지를 실제 사건의 증거처럼 제시했다.
-- 불쾌감·공포·신체 왜곡이 큰 아이콘·캐릭터를 사용했다.
-- 사용자가 생성 기능을 금지했는데 generated-* 자산을 사용했다.
-- ASSET_AUDIT.md, VISUAL_FALLBACK_LOG.md, IMAGE_SOURCES.md, QA_REPORT.md 중 하나가 빠졌다.
-- 실제 파일 경로를 확인하지 않고 완료 보고했다.
-
----
-
-## 12. 사용자 피드백의 영구 반영
-
-사용자가 `스킬에 넣어`, `다음에도 기억`, `규칙으로 고정`, `스킬 업데이트`라고 말하면:
-
-1. 현재 작업에 즉시 적용한다.
-2. `SKILL.md` 또는 reference 문서에 실제 반영한다.
-3. GitHub 커밋을 완료한다.
-4. 변경 파일과 핵심 변경점을 보고한다.
-
----
-
-## 공식 선언
-
-**현재 기본 제작 방식은 `report-carousel-v3.2-large-type-adaptive-assets`다.**
-
-**다장 카드뉴스는 이미지 생성이 아니라 파일 렌더링으로 한 번에 제작한다.**
-
-**본문을 먼저 크게 조판하고 사진·패널·표·그래프·캡처 레이어를 텍스트와 정보 근거에 맞춘다.**
-
-**이미지가 부족하면 실제 이미지, 실제 캡처, 실제 데이터 그래프·표, 원문 기반 도식, 저불쾌감 보조 생성 에셋, 타이포그래피 순으로 해결한다.**
-
-**표에는 사진을 사용하지 않고, 실제 사진 전경은 무크롭이며, 원문은 지시된 경우 한 글자도 빠짐없이 유지한다.**
+피드백은 실행 문서·예시·검수에 함께 반영하고 GitHub 커밋 후 다시 읽어 확인한다. 저장소 업로드와 새 채팅 자동 로드는 같은 기능이 아니다. 새 작업에서 이 저장소의 SKILL.md를 실제 읽고 적용하며, 읽지 못했으면 적용했다고 말하지 않는다.

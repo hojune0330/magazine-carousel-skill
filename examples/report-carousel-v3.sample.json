@@ -1,196 +1,30 @@
 {
-  "profile": "report-carousel-v3.2-large-type-adaptive-assets",
-  "canvas": {
-    "width": 1080,
-    "height": 1350,
-    "aspect_ratio": "4:5"
-  },
-  "mode": {
-    "render_engine": "deterministic",
-    "image_gen_for_layout": false,
-    "source_preserving": true,
-    "fixed_page_count": 20,
-    "render_all_pages_in_one_run": true,
-    "typography_preset": "source-dense-large",
-    "adaptive_fill": true,
-    "two_pass_rebalance": true,
-    "asset_audit": true,
-    "visual_fallback": true,
-    "generated_auxiliary_allowed": true
-  },
-  "brand": {
-    "label": "ELITE REPORT",
-    "credit": "@io_magazine / 장호준 코치",
-    "accent": "#FFD300",
-    "background": "#FAF9F6"
-  },
-  "typography": {
-    "main_title": {"size": 56, "line_height": 66},
-    "section_title": {"size": 36, "line_height": 47},
-    "subtitle": {"size": 30, "line_height": 41},
-    "body": {"size": 21, "line_height": 32},
-    "caption": {"size": 17, "line_height": 25},
-    "table": {"size": 14, "line_height": 20},
-    "chart_label": {"size": 14, "line_height": 20},
-    "chart_value": {"size": 17, "line_height": 23},
-    "reference": {"size": 11, "line_height": 16}
-  },
-  "fill_targets": {
-    "normal_vertical_fill": [0.86, 0.97],
-    "panel_utilization": [0.72, 0.92],
-    "table_vertical_fill": [0.72, 0.92],
-    "chart_vertical_fill": [0.70, 0.92],
-    "max_unintentional_blank_band_px": 140,
-    "max_body_footer_gap_px": 180
-  },
-  "rules": {
-    "table_pages_have_no_photos": true,
-    "foreground_photo_fit": "contain",
-    "foreground_crop": false,
-    "blurred_same_image_background": true,
-    "default_max_uses_per_asset": 1,
-    "fixed_typography": true,
-    "font_follows_layer": false,
-    "layer_follows_measured_text": true,
-    "ten_image_generation_limit_applies": false,
-    "actual_data_only_for_charts": true,
-    "screenshots_require_provenance": true,
-    "generated_auxiliary_is_last_resort": true,
-    "generated_auxiliary_discomfort": "very-low"
-  },
-  "source": {
-    "path": "source.txt",
-    "sha256": "<source-sha256>",
-    "character_count": 0
-  },
-  "assets": [
-    {
-      "id": "photo-01",
-      "path": "assets/photos/photo-01.jpg",
-      "origin": "user-upload",
-      "media_type": "photo",
-      "sha256": "<asset-sha256>",
-      "perceptual_hash": "<phash>",
-      "source_url": null,
-      "used_on": [1]
-    },
-    {
-      "id": "capture-01",
-      "path": "assets/screenshots/capture-01.png",
-      "origin": "official-screenshot",
-      "media_type": "screenshot",
-      "source_url": "https://example.org/official-results",
-      "source_title": "Official results",
-      "capture_date": "2026-08-28",
-      "used_on": [8]
-    },
-    {
-      "id": "chart-01",
-      "path": "assets/generated/chart-01.svg",
-      "origin": "generated-chart",
-      "media_type": "chart",
-      "generated_from_data": "assets/data/records.csv",
-      "units": "seconds",
-      "used_on": [9]
-    },
-    {
-      "id": "icon-01",
-      "path": "assets/generated/icon-01.png",
-      "origin": "generated-icon",
-      "media_type": "illustration",
-      "generation_profile": {
-        "style": "clean-flat-2d",
-        "mood": "healthy-calm-friendly",
-        "uncanny_level": "very-low",
-        "discomfort_level": "very-low"
-      },
-      "used_on": [13]
-    }
-  ],
+  "profile": "report-carousel-v3.3-text-first-audience-clean",
+  "example_only": true,
+  "mode": {"renderer": "deterministic", "source_policy": "preserve-exact", "images_are_supplemental": true, "generative_ai_allowed": false},
+  "typography": {"body": {"size": 26, "line_height": 39}, "title": {"size": 56, "line_height": 66}, "section_title": {"size": 36, "line_height": 47}},
   "pages": [
     {
       "page": 1,
-      "type": "cover-photo",
-      "title": "2026 세계 여자 육상 800m 시즌 결산",
-      "source_start": 0,
-      "source_end": 0,
-      "asset_id": "photo-01",
-      "visual_requirement": "photo-required",
-      "fallback_tier": 1,
-      "expected_text_height": 340,
-      "panel_height": 410
-    },
-    {
-      "page": 6,
-      "type": "table-balanced",
-      "title": "2026 시즌 세계 여자 육상 800m Top 15",
-      "asset_id": null,
-      "visual_requirement": "photo-forbidden",
-      "photo_forbidden": true,
-      "row_height_range": [64, 118]
-    },
-    {
-      "page": 8,
-      "type": "evidence-capture",
-      "title": "공식 결과에서 확인되는 변화",
-      "asset_id": "capture-01",
-      "visual_requirement": "capture-evidence",
-      "fallback_tier": 3
-    },
-    {
-      "page": 9,
-      "type": "chart-report",
-      "title": "기록은 얼마나 빨라졌나",
-      "asset_id": "chart-01",
-      "visual_requirement": "data-visual",
-      "fallback_tier": 4,
-      "chart_vertical_fill_target": 0.82
-    },
-    {
-      "page": 13,
-      "type": "icon-grid",
-      "title": "스피드 지구력의 구성 요소",
-      "asset_id": "icon-01",
-      "visual_requirement": "diagram-preferred",
-      "fallback_tier": 6,
-      "fallback_reason": "No relevant real photo or factual capture"
-    },
-    {
-      "page": 20,
-      "type": "sources",
-      "title": "결론 및 향후 전망",
-      "asset_id": null,
-      "visual_requirement": "typography-sufficient",
-      "fallback_tier": 7
+      "type": "text-report",
+      "text_nodes": [
+        {"id": "p01-brand", "audience": "public", "role": "brand", "provenance": "brand", "text": "ELITE REPORT"},
+        {"id": "p01-title", "audience": "public", "role": "title", "provenance": "source", "text": "일본 마라톤의 선수층"},
+        {"id": "p01-body", "audience": "public", "role": "body", "provenance": "source", "text": "본 보고서는 선수층과 기록의 분포를 분석한다."},
+        {"id": "p01-method", "audience": "public", "role": "method-note", "provenance": "source", "text": "선수별 최고 기록과 출전 건수는 구분한다."},
+        {"id": "p01-page", "audience": "public", "role": "page-number", "provenance": "brand", "text": "01 / 01"},
+        {"id": "p01-credit", "audience": "public", "role": "brand", "provenance": "brand", "text": "@io_magazine / 장호준 코치"}
+      ]
     }
   ],
-  "qa": {
-    "missing_chars": 0,
-    "duplicated_chars": 0,
-    "order_mismatch": 0,
-    "offset_gaps": 0,
-    "offset_overlaps": 0,
-    "unintentional_blank_bands": 0,
-    "body_font_below_20": 0,
-    "table_pages_with_photos": 0,
-    "duplicate_assets": 0,
-    "screenshots_without_provenance": 0,
-    "charts_without_source": 0,
-    "generated_auxiliary_discomfort_failures": 0
+  "production": {
+    "audience": "production",
+    "note": "원문은 production/source.txt에 보관한다. 이 설명은 렌더러에 전달하지 않는다.",
+    "qa_status": "not-run",
+    "source_coverage_status": "not-run"
   },
-  "deliverables": [
-    "01.png",
-    "20.png",
-    "<slug>.zip",
-    "<slug>_preview.jpg",
-    "<slug>_preview.png",
-    "source.txt",
-    "text-manifest.txt",
-    "page-map.json",
-    "asset-map.json",
-    "ASSET_AUDIT.md",
-    "VISUAL_FALLBACK_LOG.md",
-    "IMAGE_SOURCES.md",
-    "QA_REPORT.md"
-  ]
+  "internal": {
+    "audience": "internal",
+    "note": "예시이므로 실제 source offset과 이미지 파일을 갖고 있지 않다. 실사용 시 실제 자료로 채운다."
+  }
 }

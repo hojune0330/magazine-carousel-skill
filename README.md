@@ -1,131 +1,58 @@
-# IO MAGAZINE Report Carousel Skill
+# IO MAGAZINE — Text-first Report Carousel
 
-인스타그램 4:5 세로형 카드뉴스를 **결정론적 파일 렌더링**으로 제작하는 전용 스킬입니다.
+**ACTIVE / v3.3 / `report-carousel-v3.3-text-first-audience-clean`**
 
-## Active profile
+긴 원문을 빠짐없이 읽히게 조판하고 실제 사진을 보조로 배치하는 인스타그램 4:5 파일 렌더링 스킬입니다. 승인 기준은 `japan_marathon_fulltext_20_v2`의 텍스트 중심 제작 수준입니다.
 
-- `report-carousel-v3.2-large-type-adaptive-assets`
-- 상태: `ACTIVE / v3.2`
-- 캔버스: `1080×1350`
-- 핵심: 큰 본문을 먼저 조판하고 사진·패널·표·그래프·캡처를 텍스트와 정보 성격에 맞춤
+## 이번 변경
 
-## 자동 해석
+수정 대상은 결과 안내문이 아니라 **슬라이드 안에 보이는 불필요한 제작 문구**입니다.
 
-아래 표현은 모두 파일 렌더링 요청입니다.
+- 슬라이드: 독자용 제목·본문·표·캡션·필요한 출처만 노출.
+- 제작 보고서와 전달 메시지: 원문 포함 여부, 파일 목록, QA 설명 허용.
+- 내부 로그: 매니페스트, 오프셋, 폰트 측정, 자산 감사 보관.
 
-- `스킬대로 파일로 만들어`
-- `20장 전체 렌더링해`
-- `이미지 생성 기능 쓰지 말고`
-- `PNG와 ZIP으로 만들어`
-- `앞 장에 이어서 만들어`
-- `원문 빠짐없이 제작`
+`FULL TEXT`, `원문은 파일에 수록`, `검수본`, `manifest`, `QA report` 같은 제작 태그를 게시용 이미지에 붙이지 않습니다. 연구 방법·기간·표본 기준이나 필요한 사진 크레딧은 유지합니다.
 
-이때는 전체 장수를 한 실행에서 PNG로 렌더링하며 10장 생성 제한을 적용하지 않습니다.
+## 기본 제작 규칙
 
-## 지원 업로드 형식
+- 요청 전체 장수를 PNG로 한 번에 파일 렌더링. 10장 생성 제한 적용 없음.
+- 본문 26px/39px를 새 기본으로 사용하고 같은 역할의 규격은 전 장 고정.
+- 본문과 원래 표를 먼저 확보. 그래프·사진으로 본문을 대체하지 않음.
+- 사진은 관련성이 있는 실제 파일만, 전경 무크롭, 기본 1회 사용.
+- 표 페이지에는 사진 없음.
+- 이미지 조사 → 후보 선별 → 권리·해상도 확인 → 중복 검사 → 남은 공간 배정.
+- 원문에 의심점이 있어도 무단 교정하지 않고 별도 검토 메모로 분리.
 
-- 사진: JPG/JPEG, PNG, WebP
-- 변환 후 사용: HEIC/HEIF, TIFF, BMP, GIF
-- 벡터·문서: SVG, PDF, PPTX, DOCX
-- 데이터: CSV, XLSX, JSON
-- 영상 프레임: MP4, MOV, WebM
-- 일괄 업로드: ZIP
+## 실행 문서
 
-이미지는 sRGB, 실제 방향, 알파 채널, 파일 해시 기준으로 정규화하고 `ASSET_AUDIT.md`에 기록합니다.
+`SKILL.md`부터 읽습니다. 핵심 세부 문서는 아래와 같습니다.
 
-## 이미지가 부족할 때
+- `references/audience-content-boundary.md`
+- `references/copy-guard.md`
+- `references/report-carousel-v3.md`
+- `references/adaptive-density.md`
+- `references/image-research-and-placement.md`
+- `references/asset-intake-and-visual-fallback.md`
+- `references/request-routing.md`
+- `references/production-workflow.md`
+- `references/qa-checklist.md`
 
-페이지 내용에 따라 다음 순서로 채웁니다.
+## 게시 문구 검사
 
-1. 사용자 제공 실제 이미지
-2. 실제 원본 이미지 추가 다운로드
-3. 공식 웹·PDF·영상·앱의 실제 캡처
-4. 실제 데이터 기반 그래프·표
-5. 원문 기반 도식·타임라인·프로세스
-6. 매우 낮은 불쾌감의 2D 아이콘·캐릭터·개념 일러스트
-7. 대형 기록·source-highlight 등 타이포그래피
-
-숫자 근거가 없는 가짜 그래프, 출처 없는 캡처, 실제 선수의 가짜 경기 사진은 사용하지 않습니다.
-
-사용자가 `이미지 생성 기능 쓰지 말고`라고 하면 6번 보조 생성 자산도 비활성화합니다.
-
-## 보조 생성 이미지의 시각 기준
-
-- clean flat 2D
-- healthy, calm, friendly
-- uncanny/discomfort very low
-- 폭력, 피, 주사, 수술, 체액, 공포, 신체 왜곡, 성적 대상화 없음
-- 실제 선수·경기·수상 장면의 포토리얼 재현 금지
-- 생성 이미지 내부의 긴 한국어 본문·표·페이지 번호 금지
-
-보조 에셋만 생성할 수 있으며 최종 페이지는 항상 코드로 렌더링합니다.
-
-## 큰 본문·빈 공간 개선
-
-- `reading-large`: body 23/35, table 15/22
-- `source-dense-large`: body 21/32, table 14/20
-- 본문 20px 미만 금지
-- 텍스트 bounding box 선측정
-- 패널 높이 = 텍스트 높이 + 패딩
-- 남은 영역을 사진·그래프·도식에 배분
-- underfill/overfill 인접 페이지 재균형
-
-## 승인된 제작 규칙
-
-- 표 페이지에는 사진 사용 금지
-- 실제 사진 전경은 무크롭 contain
-- 같은 사진은 기본 1회 사용
-- 사용자 제공 이미지는 실제 업로드 파일 사용
-- 온라인 이미지는 실제 원본 다운로드 후 출처·작가·라이선스 기록
-- 실제 캡처는 URL·페이지·시간코드·캡처 날짜 기록
-- 그래프는 실제 원문·CSV·공식 결과의 값만 사용
-- 원문 보존 요청 시 문자·수치·각주·URL·표 셀·순서 유지
-- 전체 페이지 경계를 하나의 page-map으로 관리
-
-## 기본 산출물
-
-```text
-01.png ~ 20.png
-<slug>.zip
-<slug>_preview.jpg
-<slug>_preview.png
-source.txt
-text-manifest.txt
-page-map.json
-asset-map.json
-ASSET_AUDIT.md
-VISUAL_FALLBACK_LOG.md
-IMAGE_SOURCES.md
-QA_REPORT.md
+```bash
+python scripts/lint_public_surface.py examples/report-carousel-v3.sample.json
+python -m unittest discover -s tests -v
 ```
 
-## 파일 구조
+제작 시에는 실제 `render-surface.json`에 검사기를 실행합니다. 검사기는 문자를 삭제하지 않고 검토할 위치를 반환합니다. 픽셀 잘림·원문 완전성 검사는 별도로 수행해야 합니다. 저장소에 검사기를 추가한 것만으로 과거 PNG가 고쳐지는 것은 아닙니다.
 
-- `SKILL.md` — 최상위 실행 규칙
-- `references/request-routing.md` — 짧은 사용자 지시 해석
-- `references/production-workflow.md` — 입력부터 ZIP 전달까지 공정
-- `references/report-carousel-v3.md` — 시각 시스템과 페이지 타입
-- `references/adaptive-density.md` — 큰 본문·동적 패널·빈 공간 재균형
-- `references/asset-intake-and-visual-fallback.md` — 업로드 형식·자산 감사·시각 대체 순서
-- `references/copy-guard.md` — 원문 무삭제와 연속성
-- `references/qa-checklist.md` — 완료 판정
+## 산출물 분리
 
-## 핵심 실패 조건
+`01.png`부터 마지막 PNG, `preview.jpg/png`, 전체 ZIP을 전달합니다. 원문, 매니페스트, 자산 출처, 감사·검수 보고서는 `production/` 아래에 보관하며 그 파일 안내를 슬라이드에 넣지 않습니다.
 
-- 다장 요청에 생성형 이미지로 전체 페이지 제작
-- 파일 렌더링 요청에 10장 제한 적용
-- 일반 본문 20px 미만
-- 표 페이지에 사진 배치
-- 사진 핵심 피사체 크롭
-- 같은 사진의 승인 없는 반복
-- 저해상도 사진의 무리한 전면 확대
-- 출처 없는 캡처
-- 실제 데이터가 없는 가짜 그래프
-- 불쾌감·왜곡이 큰 캐릭터 사용
-- 사용자가 생성을 금지했는데 generated-* 자산 사용
-- 실제 파일 없이 완료 보고
+## 호출 예시
 
-## Legacy
+> 스킬대로 20장 전체 렌더링해. 원문은 전부 사용하고, 사진은 보조로. 슬라이드에는 독자용 콘텐츠만 넣어.
 
-- v2와 v3.0~v3.1은 과거 기준 참고용입니다.
-- 현재 실행 기준은 `report-carousel-v3.2-large-type-adaptive-assets`입니다.
+이 저장소는 재사용 가능한 규칙 원본이며 새 채팅의 자동 실행을 보장하지 않습니다. 사용할 때 저장소의 최신 SKILL.md를 읽도록 합니다. v2~v3.2 예시는 과거 참고용입니다.
