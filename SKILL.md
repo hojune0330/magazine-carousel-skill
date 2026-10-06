@@ -1,13 +1,13 @@
 ---
 name: io-magazine-report-carousel
 description: Render Korean Instagram report carousels as complete text-first PNG file sets. Preserve the selected source in full when requested; photos, charts and diagrams supplement rather than replace text. Use the approved large-type layout, measure text before assigning image space, keep tables photo-free, and separate public slide content from production reports and internal logs. Never print FULL TEXT, source-file notices, QA or manifest status on audience-facing slides. Research and attribute real image assets, validate every visible text node, and deliver the requested page count in one rendering job.
-version: 3.3
+version: 3.4
 status: active
 ---
 
-# IO MAGAZINE — Text-first Report Carousel v3.3
+# IO MAGAZINE — Text-first Report Carousel v3.4
 
-현재 활성 프로필: `report-carousel-v3.3-text-first-audience-clean`.
+현재 활성 프로필: `report-carousel-v3.4-text-first-audience-clean`.
 
 ## 0. 이번 승인 기준
 
@@ -47,6 +47,8 @@ status: active
 - `references/request-routing.md` — 짧은 지시 해석
 - `references/production-workflow.md` — 실제 제작 공정
 - `references/qa-checklist.md` — 완료 기준
+- `references/cover-and-closing-slides.md` — 인스타 첫 장의 강한 텍스트 표지와 마지막 CTA 규칙
+- `examples/2026-09-running-biomechanics-session.md` — 팔치기·리듬 카드뉴스 반복 수정에서 확정된 사례와 실패/개선 기록
 
 현재 사용자 지시가 최우선이며 환경의 상위 지침과 안전 규칙을 따른다. 위 문서가 충돌하면 원문 보존과 노출층 분리 원칙을 먼저 적용한다. 충돌을 이유로 원문을 자동 삭제하지 않는다. v2~v3.2의 사진 우선·작은 본문·축약 예시는 과거 참고일 뿐 현재 기본값이 아니다.
 
